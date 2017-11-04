@@ -1,0 +1,17 @@
+{
+  "hints": [],
+  "groups": [
+    {
+      "sourceType": "com.ordernao.properties.QueriesProperty",
+      "name": "",
+      "type": "com.ordernao.properties.QueriesProperty"
+    }
+  ],
+  "properties": [
+    {
+      "sourceType": "com.ordernao.properties.QueriesProperty",
+      "name": "query",
+      "type": "java.util.Map<java.lang.String,java.lang.String>"
+    }
+  ]
+}
