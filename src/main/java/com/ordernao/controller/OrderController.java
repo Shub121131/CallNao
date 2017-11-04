@@ -159,10 +159,17 @@ public class OrderController {
 
 	}
 
+	/**
+	 * @author Shubham Sharma
+	 * @Date 04-Nov-2017
+	 * @Time 12:33:03 PM
+	 * @Description this method is used to add employee(Call_Operator,Manager,Delivery_Boys)
+	 * @Return success if employee is added & error if any error is occured
+	 */
 	@RequestMapping(OrderNaoConstants.PATH_ADD_EMPLOYEE)
 	@ResponseBody
 	public String addEmployee(@ModelAttribute(OrderNaoConstants.MODAL_ATTRIBUTE_EMPLOYEE_BEAN) EmployeeBean employee) {
-		logger.info("Entry at addEmployee(Controller) ");
+		logger.info("Entry at addEmployee");
 		String userName = employee.getUserName();
 		String firstName = employee.getFirstName();
 		String lastName = employee.getLastName();
@@ -195,14 +202,22 @@ public class OrderController {
 			logger.info("Exit at addEmployee(Controller) ");
 			return OrderNaoConstants.RETURN_STATUS_USERNAME_NOT_AVAILABLE;
 		}
+		// Here we check whether contact number exist in database if exist we return
+		// "phone number exist " else we process the request
+		boolean contactNumberStatus = service.checkForPhoneNumber(contactNumber);
+		if (contactNumberStatus) {
+			logger.info("Contact Number Exists");
+			logger.info("Exit at addEmployee");
+			return OrderNaoConstants.RETURN_STATUS_PHONE_NUMBER_NOT_AVAILABLE;
+		}
 		boolean status = service.saveEmployee(employee);
 		if (status) {
 			logger.info("Employee Inserted successfully ");
-			logger.info("Exit at addEmployee(Controller) ");
+			logger.info("Exit at addEmployee ");
 			return OrderNaoConstants.RETURN_STATUS_SUCCESS;
 		}
 		logger.info("Employee Insertion failed ");
-		logger.info("Exit at addEmployee(Controller) ");
+		logger.info("Exit at addEmployee ");
 		return OrderNaoConstants.RETURN_STATUS_FAIL;
 
 	}
@@ -524,7 +539,13 @@ public class OrderController {
 					OrderNaoConstants.ERROR_MSG_HEADER);
 			model.addAttribute(OrderNaoConstants.MODAL_ATTRIBUTE_ERROR_MESSAGE, OrderNaoConstants.ERROR_MSG);
 			return OrderNaoConstants.PATH_SUSPICIOUS_ACTIVITY;
-		} else {
+		}else if (returnMessage.equals(OrderNaoConstants.DELIVERY_BOY_NOT_ASSIGNED)) {
+			logger.info("Exit at savePendingOrDeliveredStatusOfOrder(Controller) ");
+			model.addAttribute(OrderNaoConstants.MODAL_ATTRIBUTE_ERROR_MESSAGE_HEADER,
+					OrderNaoConstants.ERROR_MSG_HEADER);
+			model.addAttribute(OrderNaoConstants.MODAL_ATTRIBUTE_ERROR_MESSAGE, OrderNaoConstants.ERROR_MSG_DELIVERY_BOY_NOT_ASSIGNED);
+			return OrderNaoConstants.PATH_SUSPICIOUS_ACTIVITY;
+		}  else {
 			logger.info("Exit at savePendingOrDeliveredStatusOfOrder(Controller) ");
 			model.addAttribute(OrderNaoConstants.MODAL_ATTRIBUTE_ERROR_MESSAGE_HEADER,
 					OrderNaoConstants.SUSPICIOUS_ACTIVITY_MSG_HEADER);

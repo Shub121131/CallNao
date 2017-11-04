@@ -87,6 +87,7 @@ public final class OrderNaoConstants {
 	public static final String RETURN_STATUS_EMPTY_CONFIRM_PASSWORD = "emptyConfirmPassword";
 	public static final String RETURN_STATUS_PASSWORD_DOESNOT_MATCH = "passwordsDontMatch";
 	public static final String RETURN_STATUS_USERNAME_NOT_AVAILABLE = "userNameNotAvailable";
+	public static final String RETURN_STATUS_PHONE_NUMBER_NOT_AVAILABLE = "phoneNumberNotAvailable";
 	public static final String PATH_MORE_DETAILS_OF_ORDER = "/more-detail-of-order";
 	public static final String REQUEST_PARAM_ORDERNUMBER = "orderNumber";
 	public static final String RETURN_STATUS_MORE_DETAILS_OF_ORDER = "moreDetailsOfOrder";
@@ -194,6 +195,7 @@ public final class OrderNaoConstants {
 	public static final String CHECK_FOR_CURRENT_DATE_ENTRY_OF_MONEY_PROVIDED = "checkForCurrentDateEntryOfMoneyProvided";
 	public static final String UPDATE_MONEY_PROVIDED_TO_DELIVERY_BOY = "updateMoneyProvidedToDeliveryBoy";
 	public static final String INSERT_CURRENT_DATE_ENTRY_FOR_MONEY_PROVIDED = "insertCurrentDateEntryForMoneyProvided";
+	public static final String INSERT_CURRENT_DATE_ENTRY_FOR_DELIVERY_BOY = "insertCurrentDateEntryForEmployee";
 	public static final String GET_TOTAL_MONEY_PROVIDED = "getTotalMoneyProvided";
 	public static final String GET_TOTAL_SUM_OF_SERVICE_CHARGE_OF_DELIVERED_ORDERS = "getSumOfServiceCharge";
 	public static final String MODAL_ATTRIBUTE_TOTAL_MONEY_TO_BE_COLLECTED = "totalMoneyToBeCollected";
@@ -260,4 +262,8 @@ public final class OrderNaoConstants {
 	public static final int FOR_MONTHLY_TOTAL_ORDER_REPORT = 1;
 	public static final int FOR_MONTHLY_SUCCESSFULL_ORDER_REPORT = 2;
 	public static final int FOR_MONTHLY_FAILED_ORDER_REPORT = 3;
+	public static final String CHECK_FOR_PHONE_NUMBER = "checkPhoneNumber";
+	public static final String CHECK_DELIVERY_BOY_ASSIGNMENT_FOR_ORDER = "checkDeliveryBoyAssignmentForOrder";
+	public static final String DELIVERY_BOY_NOT_ASSIGNED = "deliveryBoyNotAssigned";
+	public static final Object ERROR_MSG_DELIVERY_BOY_NOT_ASSIGNED = "Delivery boy not assigned,assign delivery boy to change order status.";
 }

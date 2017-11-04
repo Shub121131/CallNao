@@ -4,20 +4,20 @@
 	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <body>
-	<div th:fragment="paymentDetails">
+	<div>
 		<div class="card height">
 			<div class="card-body">
 				<h4 class="card-title">
 					Name of the delivery boy : <span id="selectedDeliveryBoyName"></span>
 				</h4>
 				<p class="card-text">
-					<strong>Total Distance travel today</strong> : <span
+					<strong>Total Distance travel today(for orders which are delivered)</strong> : <span
 						th:text="${deliveryBoy != null} ? ${deliveryBoy.totalDistanceTravelled} : 'N/A'"></span>
 					KM
 				</p>
 				<br>
 				<p class="card-text">
-					<strong>Total Service Charge To Be Collected</strong> :&#8377; <span
+					<strong>Total Service Charge To Be Collected(for orders which are delivered)</strong> :&#8377; <span
 						id="totalServiceChargeToCollect"
 						th:text="${deliveryBoy != null} ? ${deliveryBoy.totalServiceChargeToCollect} : 'N/A'"></span>
 				</p>

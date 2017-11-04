@@ -58,6 +58,7 @@
 					<td>
 
 						<div th:switch="${trackOrder.orderStatus}" >
+						<input type="hidden" th:value="${trackOrder.deliveryBoyId}" th:id="'deliveryBoy'+${trackOrder.orderNumber}"/>
 							<span th:case="'Pending'"> <select
 								
 								th:onchange="'assignDeliveryBoyFunc(\'' + ${trackOrder.orderNumber} + '\',this);'">
@@ -71,6 +72,7 @@
 							</span> <span th:case="'Delivered'"><select 
 								id="DeliveredStatusInDropdown"
 								th:onchange="'assignDeliveryBoyFunc(\'' + ${trackOrder.orderNumber} + '\',this);'">
+								<option disabled="" selected="selected">Unassigned</option>
 									<option th:each="deliveryBoy : ${deliveryBoysBean}"
 										th:if="${deliveryBoy != null}"
 										th:value="${deliveryBoy.deliveryBoyId}"

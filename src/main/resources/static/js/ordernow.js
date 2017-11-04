@@ -15,368 +15,161 @@ var selectedYear = -1;
 var selectedMonth = -1;
 
 var suspiciousActivity = "Warning,Suspicious Activity Detected.";
-$(document)
-		.ready(
-				function() {
+$(document).ready(function() {
 
-					$("#nextButton")
-							.click(
-									function() {
-										var clientPhoneNumber = $(
-												"#clientphone").val();
-										console.log("client phonenumber "
-												+ clientPhoneNumber);
-										var phoneNumberLength = clientPhoneNumber.length;
-										if (phoneNumberLength < 10
-												|| phoneNumberLength > 10) {
-											alert("Phonenumber should contain 10 digits");
-										} else {
-											// alert("Correct Phone number");
-											$
-													.ajax({
-														url : '/save-contact-number',
-														type : 'POST',
-														data : {
-															'contactNumber' : clientPhoneNumber
-														},
-														success : function(
-																result) {
-															if (result == "incorrectPhoneNumber") {
-																alert("Phonenumber should contain 10 digits");
-																location.href = "homepage.html"
-															} else if (result == "success") {
-																location.href = "summary.html";
-															} else if (result == "error") {
-																alert("Some error occured, please try again");
-																location.href = "homepage.html";
-															}
-														},
-														error : function() {
-															alert("Some error occured, please try again");
-															location.href = "homepage.html"
-														}
-													});
-										}
-									});
+	$("#cancelorder").click(function() {
+		$("#commentBox").toggle()
+		if (!$("#commentBox").css('visibility') === 'hidden') {
+			// alert("visible");
+		}
+	});
+	$("#addMore").click(function() {
+		console.log("AddMore:- ");
+		console.log("counter :- " + addMoreButtonCounter);
+		// here we are checking for number of
+		// pickup/delivery points
+		// if they are less than 5 then only we
+		// increase counter because
+		// we are providing total 5 counters(1
+		// is by default + this 4=5)
+		if (addMoreButtonCounter < 5) {
+			addMoreButtonCounter++;
+			console.log("counter :- " + addMoreButtonCounter);
+			// here we are removing remove
+			// button because we will display
+			// only one remove button
+			$("#removeButton123").remove();
+			// here we are creating label &
+			// input box for pickup
+			// point,delivery point & itemname
+			var label = $("<label>").attr({
+				'id' : "originLabel" + addMoreButtonCounter
+			}).text('Pick Up Address:' + addMoreButtonCounter);
+			var input = $('<input type="text">').attr({
+				id : 'origin' + addMoreButtonCounter,
+				placeholder : "order pick up address" + addMoreButtonCounter
+			});
+			var label2 = $("<label>").attr({
+				'id' : "destinationLabel" + addMoreButtonCounter
+			}).text('Delivery Address:' + addMoreButtonCounter);
+			var input2 = $('<input type="text">').attr({
+				id : 'destination' + addMoreButtonCounter,
+				placeholder : "order delivery address" + addMoreButtonCounter
+			});
+			var label3 = $("<label>").attr({
+				'id' : "itemLabel" + addMoreButtonCounter
+			}).text('Order :' + addMoreButtonCounter);
+			var input3 = $('<input type="text">').attr({
+				id : 'itemName' + addMoreButtonCounter,
+				placeholder : "order " + addMoreButtonCounter + " name"
+			});
+			var button = $("<button>").attr({
+				'type' : "button",
+				'id' : 'removeButton123'
+			}).text('Remove');
 
-					$("#cancelorder").click(function() {
-						$("#commentBox").toggle()
-						if (!$("#commentBox").css('visibility') === 'hidden') {
-							// alert("visible");
-						}
-					});
-					// this function is used to add employee
-					$("#addEmployee")
-							.click(
-									function() {
-										console.log("addEmployee");
-										var username = $("#username").val();
-										var firstname = $("#firstname").val();
-										var lastname = $("#lastname").val();
-										var password = $("#password").val();
-										var email = $("#email").val();
-										var confirmPassword = $(
-												"#confirmPassword").val();
-										var employeeType = $("#employeeType")
-												.val();
-										var mobileNumber = $("#contactNumber")
-												.val();
-										console.log("FirstName " + firstname
-												+ " LastName " + lastname
-												+ " UserName " + username
-												+ " Password " + password
-												+ " Email " + email
-												+ " ConfirmPassword "
-												+ confirmPassword
-												+ " MobileNumber "
-												+ mobileNumber
-												+ " Employee type :- "
-												+ employeeType);
+			// here we are adding all the three
+			// label and input box & itemname to
+			// UI
+			input.appendTo(label);
+			input2.appendTo(label2);
+			input3.appendTo(label3);
+			button.appendTo(label3);
+			$('#locationDiv').append(label);
+			$('#locationDiv').append(label2);
+			$('#locationDiv').append(label3);
+		}
+	});
 
-										if (username.length == 0) {
-											alert("User Name can't be empty");
-										} else if (firstname.length == 0) {
-											alert("First Name can't be empty");
-										} else if (lastname.length == 0) {
-											alert("Last Name can't be empty");
-										} else if (mobileNumber.length == 0
-												|| mobileNumber.length < 0
-												|| mobileNumber.length > 10) {
-											alert("Please enter valid mobile number");
-										} else if (password.length == 0) {
-											alert("Password  can't be empty");
-										} else if (confirmPassword.length == 0) {
-											alert("Confirm password can't be empty");
-										} else if (password != confirmPassword) {
-											alert("Passwords don't match, Try again");
-										} else {
-											$
-													.ajax({
-														url : "/addEmployee",
-														method : "POST",
-														data : {
-															"userName" : username,
-															"firstName" : firstname,
-															"lastName" : lastname,
-															"password" : password,
-															"confirmPassword" : confirmPassword,
-															"email" : email,
-															"employeeType" : employeeType,
-															"contactNumber" : mobileNumber
-														},
-														success : function(
-																result) {
+	// this function is called when the remove button is clicked
+	$('#locationDiv').on('click', '#removeButton123', function() {
+		console.log("RemoveButton :-");
+		console.log("counter :- " + addMoreButtonCounter);
+		// here we are checking for counter if it is
+		// less than 6 i.e 5 so we remove
+		// all the three label & input boxes & itemname
+		// from UI
+		if (addMoreButtonCounter < 6) {
+			$("#originLabel" + addMoreButtonCounter).remove();
+			$("#destinationLabel" + addMoreButtonCounter).remove();
+			$("#itemLabel" + addMoreButtonCounter).remove();
+			$("#origin" + addMoreButtonCounter).remove();
+			$("#destination" + addMoreButtonCounter).remove();
+			$("#itemName" + addMoreButtonCounter).remove();
+			$(this).remove();
+			// as we remove one entry of
+			// pickup/delivery/itemname we also decrease
+			// addMoreButtonCounter to -1
+			addMoreButtonCounter--;
+			// here we are appending remove button on UI
+			// only if pickup/delivery/item name is
+			// greater than 1
+			if (addMoreButtonCounter > 1) {
+				var button = $("<button>").attr({
+					'type' : "button",
+					'id' : 'removeButton123'
+				}).text('Remove');
+				$('#locationDiv').append(button);
+			}
+			console.log("counter :- " + addMoreButtonCounter);
+		}
+	});
+	/*
+	 * // This function is called when status filter is changed and // it will
+	 * fetch data of corrosponding status from DB $("#byStatus") .change(
+	 * function() { var status = $(this).val(); console.log("status " + status);
+	 * 
+	 * //This is used to check whether value of selected option(status) is zero
+	 * if it will be zero then we display select correct status else we forward
+	 * request
+	 * 
+	 * if (status.length == 0) { alert("Please select the correct status"); }
+	 * else {
+	 * 
+	 * try { $("#trackOrderTable") .load( "/filter-orders-by-status?status=" +
+	 * status, function() { // This modal // will be shown // if // any error or //
+	 * suspicious // activity is // found $( '#SuspiciousActivityModal') .modal( {
+	 * backdrop : 'static', keyboard : true, show : true }); }); } catch (err) {
+	 * var r console.log(err); } // } }); // This function is used to filter
+	 * track order by // time(today,last 7 days,this month,till date)
+	 * $("#byTime").change( function() { var date = $(this).val();
+	 * console.log("date " + date); $("#trackOrderTable").load(
+	 * "/filter-orders-by-date?date=" + date, function() { // This modal will be
+	 * shown if // any error or suspicious // activity is found
+	 * $('#SuspiciousActivityModal') .modal({ backdrop : 'static', keyboard :
+	 * true, show : true }); }); }); // This function is used to filter track
+	 * order by // assignment(assigned or not assigned(deliveryBoys))
+	 * $("#byAssignment").change( function() { var assignment = $(this).val();
+	 * console.log("assignment " + assignment); $("#trackOrderTable").load(
+	 * "/filter-orders-by-assignment?assignment=" + assignment, function() { //
+	 * This modal will be shown if // any error or suspicious // activity is
+	 * found $('#SuspiciousActivityModal') .modal({ backdrop : 'static',
+	 * keyboard : true, show : true }); }); });
+	 */
 
-															console
-																	.log("Result :- "
-																			+ result);
-															if (result == "emptyUsername") {
-																alert("Username can't be empty");
-															} else if (result == "invalidContactNumber") {
-																alert("Please enter a phone number");
-															} else if (result == "userNameNotAvailable") {
-																alert("Username exist, try another");
-															} else if (result == "emptyFirstname") {
-																alert("First Name can't be empty");
-															} else if (result == "emptyLastName") {
-																alert("Last Name can't be empty");
-															} else if (result == "emptyPassword") {
-																alert("Password can't be empty");
-															} else if (result == "emptyConfirmPassword") {
-																alert("Confirm Password  can't be empty");
-															} else if (result == "passwordsDontMatch") {
-																alert("Passwords don't match, try again");
-															} else if (result == "fail") {
-																alert("Some error occured, please try again");
-															} else if (result == "success") {
-																alert("Employee added successfully...");
-															}
-														},
-														error : function(xhr,
-																textStatus,
-																error) {
-															console
-																	.log("Error occured "
-																			+ error);
-															location.href = "addemploy.html";
-														}
-													});
-										}
-									});
+	$("#trackDeliverySearchButton").click(function() {
+		console.log("Search Button Called...");
+		var searchKey = $("#trackDeliverySearchKey").val();
+		var trimmedSearchKey = searchKey.trim();
+		if (trimmedSearchKey.length == 0) {
+			alert("Enter search key to search something...");
+		} else {
+			console.log("searchKey " + searchKey);
+			// here we set empty value in
+			// filters
+			$('#byStatus').val("By Status");
+			$('#byTime').val("By Time");
+			$('#byAssignment').val("By Assignment");
+			$("#trackOrderTable").load("/track-delivery-search", {
+				"searchKey" : searchKey
+			}, function() {
+				// alert("Search
+				// Success...");
+			});
+		}
+	});
 
-					$("#addMore")
-							.click(
-									function() {
-										console.log("AddMore:- ");
-										console.log("counter :- "
-												+ addMoreButtonCounter);
-										// here we are checking for number of
-										// pickup/delivery points
-										// if they are less than 5 then only we
-										// increase counter because
-										// we are providing total 5 counters(1
-										// is by default + this 4=5)
-										if (addMoreButtonCounter < 5) {
-											addMoreButtonCounter++;
-											console.log("counter :- "
-													+ addMoreButtonCounter);
-											// here we are removing remove
-											// button because we will display
-											// only one remove button
-											$("#removeButton123").remove();
-											// here we are creating label &
-											// input box for pickup
-											// point,delivery point & itemname
-											var label = $("<label>")
-													.attr(
-															{
-																'id' : "originLabel"
-																		+ addMoreButtonCounter
-															})
-													.text(
-															'Pick Up Address:'
-																	+ addMoreButtonCounter);
-											var input = $('<input type="text">')
-													.attr(
-															{
-																id : 'origin'
-																		+ addMoreButtonCounter,
-																placeholder : "order pick up address"
-																		+ addMoreButtonCounter
-															});
-											var label2 = $("<label>")
-													.attr(
-															{
-																'id' : "destinationLabel"
-																		+ addMoreButtonCounter
-															})
-													.text(
-															'Delivery Address:'
-																	+ addMoreButtonCounter);
-											var input2 = $(
-													'<input type="text">')
-													.attr(
-															{
-																id : 'destination'
-																		+ addMoreButtonCounter,
-																placeholder : "order delivery address"
-																		+ addMoreButtonCounter
-															});
-											var label3 = $("<label>")
-													.attr(
-															{
-																'id' : "itemLabel"
-																		+ addMoreButtonCounter
-															})
-													.text(
-															'Order :'
-																	+ addMoreButtonCounter);
-											var input3 = $(
-													'<input type="text">')
-													.attr(
-															{
-																id : 'itemName'
-																		+ addMoreButtonCounter,
-																placeholder : "order "
-																		+ addMoreButtonCounter
-																		+ " name"
-															});
-											var button = $("<button>").attr({
-												'type' : "button",
-												'id' : 'removeButton123'
-											}).text('Remove');
-
-											// here we are adding all the three
-											// label and input box & itemname to
-											// UI
-											input.appendTo(label);
-											input2.appendTo(label2);
-											input3.appendTo(label3);
-											button.appendTo(label3);
-											$('#locationDiv').append(label);
-											$('#locationDiv').append(label2);
-											$('#locationDiv').append(label3);
-										}
-									});
-
-					// this function is called when the remove button is clicked
-					$('#locationDiv').on(
-							'click',
-							'#removeButton123',
-							function() {
-								console.log("RemoveButton :-");
-								console.log("counter :- "
-										+ addMoreButtonCounter);
-								// here we are checking for counter if it is
-								// less than 6 i.e 5 so we remove
-								// all the three label & input boxes & itemname
-								// from UI
-								if (addMoreButtonCounter < 6) {
-									$("#originLabel" + addMoreButtonCounter)
-											.remove();
-									$(
-											"#destinationLabel"
-													+ addMoreButtonCounter)
-											.remove();
-									$("#itemLabel" + addMoreButtonCounter)
-											.remove();
-									$("#origin" + addMoreButtonCounter)
-											.remove();
-									$("#destination" + addMoreButtonCounter)
-											.remove();
-									$("#itemName" + addMoreButtonCounter)
-											.remove();
-									$(this).remove();
-									// as we remove one entry of
-									// pickup/delivery/itemname we also decrease
-									// addMoreButtonCounter to -1
-									addMoreButtonCounter--;
-									// here we are appending remove button on UI
-									// only if pickup/delivery/item name is
-									// greater than 1
-									if (addMoreButtonCounter > 1) {
-										var button = $("<button>").attr({
-											'type' : "button",
-											'id' : 'removeButton123'
-										}).text('Remove');
-										$('#locationDiv').append(button);
-									}
-									console.log("counter :- "
-											+ addMoreButtonCounter);
-								}
-							});
-					/*
-					 * // This function is called when status filter is changed
-					 * and // it will fetch data of corrosponding status from DB
-					 * $("#byStatus") .change( function() { var status =
-					 * $(this).val(); console.log("status " + status);
-					 * 
-					 * //This is used to check whether value of selected
-					 * option(status) is zero if it will be zero then we display
-					 * select correct status else we forward request
-					 * 
-					 * if (status.length == 0) { alert("Please select the
-					 * correct status"); } else {
-					 * 
-					 * try { $("#trackOrderTable") .load(
-					 * "/filter-orders-by-status?status=" + status, function() { //
-					 * This modal // will be shown // if // any error or //
-					 * suspicious // activity is // found $(
-					 * '#SuspiciousActivityModal') .modal( { backdrop :
-					 * 'static', keyboard : true, show : true }); }); } catch
-					 * (err) { var r console.log(err); } // } }); // This
-					 * function is used to filter track order by //
-					 * time(today,last 7 days,this month,till date)
-					 * $("#byTime").change( function() { var date =
-					 * $(this).val(); console.log("date " + date);
-					 * $("#trackOrderTable").load(
-					 * "/filter-orders-by-date?date=" + date, function() { //
-					 * This modal will be shown if // any error or suspicious //
-					 * activity is found $('#SuspiciousActivityModal') .modal({
-					 * backdrop : 'static', keyboard : true, show : true }); });
-					 * }); // This function is used to filter track order by //
-					 * assignment(assigned or not assigned(deliveryBoys))
-					 * $("#byAssignment").change( function() { var assignment =
-					 * $(this).val(); console.log("assignment " + assignment);
-					 * $("#trackOrderTable").load(
-					 * "/filter-orders-by-assignment?assignment=" + assignment,
-					 * function() { // This modal will be shown if // any error
-					 * or suspicious // activity is found
-					 * $('#SuspiciousActivityModal') .modal({ backdrop :
-					 * 'static', keyboard : true, show : true }); }); });
-					 */
-
-					$("#trackDeliverySearchButton")
-							.click(
-									function() {
-										console.log("Search Button Called...");
-										var searchKey = $(
-												"#trackDeliverySearchKey")
-												.val();
-										var trimmedSearchKey = searchKey.trim();
-										if (trimmedSearchKey.length == 0) {
-											alert("Enter search key to search something...");
-										} else {
-											console.log("searchKey "
-													+ searchKey);
-											// here we set empty value in
-											// filters
-											$('#byStatus').val("By Status");
-											$('#byTime').val("By Time");
-											$('#byAssignment').val(
-													"By Assignment");
-											$("#trackOrderTable").load(
-													"/track-delivery-search", {
-														"searchKey" : searchKey
-													}, function() {
-														// alert("Search
-														// Success...");
-													});
-										}
-									});
-
-				});
-
+});
 
 function getDetailsOfOrder(forDate) {
 	var forDailyTotalOrderReport = 1;
@@ -423,12 +216,14 @@ function getMonthlyDetailsOfOrder(forDate) {
 		if (forDate == forMonthlyTotalOrderReport
 				|| forDate == forMonthlySuccessfullOrderReport
 				|| forDate == forMonthlyFailedOrderReport) {
-			console.log("Inside getMonthlyDetailsOfOrder() :- forDate :-"+forDate+" Year :- "+selectedYear+" Month :- "+selectedMonth);
+			console.log("Inside getMonthlyDetailsOfOrder() :- forDate :-"
+					+ forDate + " Year :- " + selectedYear + " Month :- "
+					+ selectedMonth);
 			$("#orderReportsModal").load(
 					"/get-monthly-order-reports?forDate=" + forDate
 							+ "&selectedYear=" + selectedYear
 							+ "&selectedMonth=" + selectedMonth, function() {
-						
+
 						$('#reportsModal').modal({
 							backdrop : 'static',
 							keyboard : true,
@@ -467,8 +262,10 @@ function showMonthDetails(month) {
 					"/get-monthly-detail-of-order?selectedMonth="
 							+ selectedMonth + "&selectedYear=" + selectedYear,
 					function() {
-								/*$("#monthlyReport").load(
-										window.location.href + " #monthlyReport");*/
+						/*
+						 * $("#monthlyReport").load( window.location.href + "
+						 * #monthlyReport");
+						 */
 					});
 		} else {
 			alert("Warning,Suspicious Activity Detected.");
@@ -489,6 +286,19 @@ $(document).keyup(
 				console.log(myexp);
 				$(myexp).prop('selected', true);
 				$("#reportsModal").modal('hide');
+			}
+			if (e.keyCode === 13) { // checks whether the pressed key is
+				// "Enter"
+				var currentURL = window.location.href;
+				console.log("URL :- " + currentURL);
+				if (currentURL.search("homepage.html") != -1) {
+					console.log("Homepage : entry key pressed.");
+					savePhoneNumber();
+				}
+				if (currentURL.search("addemploy.html") != -1) {
+					console.log("AddEmployee : entry key pressed.");
+					addEmployee();
+				}
 			}
 		});
 
@@ -757,7 +567,7 @@ function currentOrderStatusFunc(orderNumber, currentStatus, previousStatus) {
 				show : true
 			});
 
-		} else if (status == "Pending" || status == "Delivered") {
+		} else if (status == "Pending") {
 
 			tempOrderNumberForStatusChange = orderNumber;
 			tempStatusForStatusChange = status;
@@ -767,6 +577,21 @@ function currentOrderStatusFunc(orderNumber, currentStatus, previousStatus) {
 				show : true
 			});
 
+		} else if (status == "Delivered") {
+			var deliveryBoyNotAssigned = 0;
+			var deliveryBoyStatus = $("#deliveryBoy" + orderNumber).val();
+			if (deliveryBoyStatus == deliveryBoyNotAssigned) {
+				alert("Delivery boy not assigned,assign delivery boy to change order status.");
+				setDefaultStatus();
+			} else {
+				tempOrderNumberForStatusChange = orderNumber;
+				tempStatusForStatusChange = status;
+				$("#pendingOrDeliveredConfirmModal").modal({
+					backdrop : 'static',
+					keyboard : true,
+					show : true
+				});
+			}
 		}
 	} else {
 		alert("Suspicious Activity");
@@ -1035,5 +860,118 @@ function placeOrder() {
 				}
 			});
 		}
+	}
+}
+function savePhoneNumber() {
+	var clientPhoneNumber = $("#clientphone").val();
+	console.log("client phonenumber " + clientPhoneNumber);
+	var phoneNumberLength = clientPhoneNumber.length;
+	if (phoneNumberLength < 10 || phoneNumberLength > 10) {
+		alert("Phonenumber should contain 10 digits");
+	} else {
+		// alert("Correct Phone number");
+		$.ajax({
+			url : '/save-contact-number',
+			type : 'POST',
+			data : {
+				'contactNumber' : clientPhoneNumber
+			},
+			success : function(result) {
+				if (result == "incorrectPhoneNumber") {
+					alert("Phonenumber should contain 10 digits");
+					location.href = "homepage.html"
+				} else if (result == "success") {
+					location.href = "summary.html";
+				} else if (result == "error") {
+					alert("Some error occured, please try again");
+					location.href = "homepage.html";
+				}
+			},
+			error : function() {
+				alert("Some error occured, please try again");
+				location.href = "homepage.html"
+			}
+		});
+	}
+}
+
+// this function is used to add employee
+function addEmployee() {
+	console.log("addEmployee");
+	var username = $("#username").val();
+	var firstname = $("#firstname").val();
+	var lastname = $("#lastname").val();
+	var password = $("#password").val();
+	var email = $("#email").val();
+	var confirmPassword = $("#confirmPassword").val();
+	var employeeType = $("#employeeType").val();
+	var mobileNumber = $("#contactNumber").val();
+	console.log("FirstName " + firstname + " LastName " + lastname
+			+ " UserName " + username + " Password " + password + " Email "
+			+ email + " ConfirmPassword " + confirmPassword + " MobileNumber "
+			+ mobileNumber + " Employee type :- " + employeeType);
+
+	if (username.length == 0) {
+		alert("User Name can't be empty");
+	} else if (firstname.length == 0) {
+		alert("First Name can't be empty");
+	} else if (lastname.length == 0) {
+		alert("Last Name can't be empty");
+	} else if (mobileNumber.length == 0 || mobileNumber.length < 0
+			|| mobileNumber.length > 10) {
+		alert("Please enter valid mobile number");
+	} else if (password.length == 0) {
+		alert("Password  can't be empty");
+	} else if (confirmPassword.length == 0) {
+		alert("Confirm password can't be empty");
+	} else if (password != confirmPassword) {
+		alert("Passwords don't match, Try again");
+	} else {
+		$.ajax({
+			url : "/addEmployee",
+			method : "POST",
+			data : {
+				"userName" : username,
+				"firstName" : firstname,
+				"lastName" : lastname,
+				"password" : password,
+				"confirmPassword" : confirmPassword,
+				"email" : email,
+				"employeeType" : employeeType,
+				"contactNumber" : mobileNumber
+			},
+			success : function(result) {
+
+				console.log("Result :- " + result);
+				if (result == "emptyUsername") {
+					alert("Username can't be empty");
+				} else if (result == "invalidContactNumber") {
+					alert("Please enter a phone number");
+				} else if (result == "userNameNotAvailable") {
+					alert("Username exist, try another");
+				} else if (result == "emptyFirstname") {
+					alert("First Name can't be empty");
+				} else if (result == "emptyLastName") {
+					alert("Last Name can't be empty");
+				} else if (result == "emptyPassword") {
+					alert("Password can't be empty");
+				} else if (result == "emptyConfirmPassword") {
+					alert("Confirm Password  can't be empty");
+				} else if (result == "passwordsDontMatch") {
+					alert("Passwords don't match, try again");
+				} else if (result == "fail") {
+					alert("Some error occured, please try again");
+				} else if (result == "phoneNumberNotAvailable") {
+					alert("Phone number exist, try another.");
+				} else if (result == "success") {
+					alert("Employee added successfully...");
+					location.href = "addemploy.html";
+				}
+			},
+			error : function(xhr, textStatus, error) {
+				console.log("Error occured " + error);
+				location.href = "addemploy.html";
+			}
+		});
 	}
 }

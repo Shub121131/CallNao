@@ -574,6 +574,13 @@ public class OrderDao {
 		logger.info("Exit at insertCurrentDateEntryForMoneyProvidedToDeliveryBoy(DAO)");
 		return jdbcTemplate.update(sqlQuery, new Object[] { deliveryBoyId, moneyProvidedInMorning });
 	}
+	
+	public int insertCurrentDateEntryForDeliveryBoy(int deliveryBoyId, double moneyCollected,String comments) {
+		logger.info("Entry at insertCurrentDateEntryForDeliveryBoy(DAO)");
+		String sqlQuery = property.getProperty(OrderNaoConstants.INSERT_CURRENT_DATE_ENTRY_FOR_DELIVERY_BOY);
+		logger.info("Exit at insertCurrentDateEntryForDeliveryBoy(DAO)");
+		return jdbcTemplate.update(sqlQuery, new Object[] { deliveryBoyId, moneyCollected,comments });
+	}
 
 	/**
 	 * @return total money provided to all delivery boys (current date)
@@ -613,11 +620,13 @@ public class OrderDao {
 	public List<OrderBean> getDeliveryBoyTripDetails(int deliveryBoyId) {
 		logger.info("Entry at getDeliveryBoyTripDetails(DAO)");
 		String sqlQuery = property.getProperty(OrderNaoConstants.GET_DELIVERY_BOY_TRIP_DETAILS);
-		logger.info("Exit at getDeliveryBoyTripDetails(DAO)");
+		logger.info("Exit at getDeliveryBoyTripDetails(DAO) Query :- "+sqlQuery);
 		return jdbcTemplate.query(sqlQuery, new Object[] { deliveryBoyId }, new RowMapper<OrderBean>() {
 			@Override
 			public OrderBean mapRow(ResultSet rs, int rowNum) throws SQLException {
 				OrderBean orderBean = new OrderBean();
+				orderBean.setCommentStatus(rs.getString(OrderNaoConstants.COLUMN_NAME_ORDER_COMMENT_STATUS));
+				orderBean.setComments(rs.getString(OrderNaoConstants.COLUMN_NAME_ORDER_COMMENTS));
 				orderBean.setOrderNumber(rs.getInt(OrderNaoConstants.COLUMN_NAME_ORDER_NUMBER));
 				orderBean.setOrderCount(rs.getInt(OrderNaoConstants.COLUMN_NAME_ORDER_COUNT));
 				orderBean.setTotalDistance(rs.getInt(OrderNaoConstants.COLUMN_NAME_TOTAL_DISTANCE));
@@ -633,7 +642,7 @@ public class OrderDao {
 	}
 
 	public int updateMoneySubmittedByDeliveryBoy(int deliveryBoyId, String comments, double moneyCollected) {
-		logger.info("Entry at updateMoneySubmittedByDeliveryBoy");
+		logger.info("Entry at updateMoneySubmittedByDeliveryBoy deliveryBoyId :- "+deliveryBoyId+" moneyCollected :- "+moneyCollected+" comments :- "+comments);
 		String query = property.getProperty(OrderNaoConstants.UPDATE_MONEY_SUBMITTED_BY_DELIVERY_BOY);
 		logger.info("Exit at updateMoneySubmittedByDeliveryBoy");
 		return jdbcTemplate.update(query, new Object[] { comments, moneyCollected, deliveryBoyId });
@@ -659,13 +668,14 @@ public class OrderDao {
 				+ deliveryBoyId);
 		String sqlQuery = property.getProperty(OrderNaoConstants.GET_DELIVERY_BOY_TRIP_MORE_DETAILS);
 		logger.info("Exit at getDeliveryBoyTripMoreDetails(DAO) Query :- " + sqlQuery);
-		return jdbcTemplate.query(sqlQuery, new Object[] { orderNumber, deliveryBoyId }, new RowMapper<OrderBean>() {
+		return jdbcTemplate.query(sqlQuery, new Object[] { deliveryBoyId,orderNumber  }, new RowMapper<OrderBean>() {
 			@Override
 			public OrderBean mapRow(ResultSet rs, int rowNum) throws SQLException {
 				OrderBean orderBean = new OrderBean();
 				orderBean.setOrderPickedFrom(rs.getString(OrderNaoConstants.COLUMN_NAME_PICKUP_POINT));
 				orderBean.setOrderDeliveredAt(rs.getString(OrderNaoConstants.COLUMN_NAME_DELIVERY_POINT));
 				orderBean.setItemName(rs.getString(OrderNaoConstants.COLUMN_NAME_ITEM_NAME));
+				orderBean.setOrderStatus(rs.getString(OrderNaoConstants.COLUMN_NAME_ORDER_STATUS));
 				logger.info("itemname :" + orderBean.getItemName());
 				logger.info("pickup point :" + orderBean.getOrderPickedFrom());
 				logger.info("delivery point :" + orderBean.getOrderDeliveredAt());
@@ -801,6 +811,22 @@ public class OrderDao {
 		String sqlQuery = property.getProperty(OrderNaoConstants.GET_MORE_DETAILS_OF_FAILED_ORDERS_OF_MONTH);
 		logger.info("Exit at getMoreDetailsOfOrderForMonthlyFailedOrder Query :- " + sqlQuery);
 		return jdbcTemplate.query(sqlQuery, new Object[] { selectedMonth, selectedYear }, new TrackOrderRowMapper());
+	}
+
+	public int checkForPhoneNumber(String contactNumber) {
+		logger.info("Entry at checkForPhoneNumber");
+		String sqlQuery = property.getProperty(OrderNaoConstants.CHECK_FOR_PHONE_NUMBER);
+		int result = (Integer) jdbcTemplate.queryForObject(sqlQuery, new Object[] { contactNumber }, Integer.class);
+		logger.info("Exit at checkForPhoneNumber");
+		return result;
+	}
+
+	public int checkDeliveryBoyAssignmentForOrder(int orderNumber) {
+		logger.info("Entry at checkDeliveryBoyAssignmentForOrder");
+		String sqlQuery = property.getProperty(OrderNaoConstants.CHECK_DELIVERY_BOY_ASSIGNMENT_FOR_ORDER);
+		int result = (Integer) jdbcTemplate.queryForObject(sqlQuery, new Object[] { orderNumber }, Integer.class);
+		logger.info("Exit at checkDeliveryBoyAssignmentForOrder");
+		return result;
 	}
 
 }

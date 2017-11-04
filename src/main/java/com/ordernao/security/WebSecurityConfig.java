@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		.authoritiesByUsernameQuery(
 			"select email as username,role_name as role from users inner join roles on users.roleid = roles.role_id where email = ?");
     }
-
+    
     @Override
     public void configure(WebSecurity web) throws Exception {
 	web.ignoring().antMatchers("/resources/**", "/js/**", "/css/**", "/image/**"); // #3

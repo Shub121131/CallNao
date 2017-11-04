@@ -143,7 +143,7 @@ public class OrderService {
 	}
 
 	public boolean checkForUserName(String userName) {
-		logger.info("Entry at checkForUserName(Service)");
+		logger.info("Entry at checkForUserName");
 		boolean status = false;
 		try {
 			int result = dao.checkForUserName(userName);
@@ -153,7 +153,7 @@ public class OrderService {
 			} else {
 				status = false;
 			}
-			logger.info("Exit at checkForUserName(Service)");
+			logger.info("Exit at checkForUserName");
 			return status;
 		} catch (Exception e) {
 			logger.error("Exception " + e);
@@ -426,19 +426,40 @@ public class OrderService {
 
 	public String savePendingOrDeliveredOrFailedOrder(int orderNumber, String status, String failedComments) {
 		logger.info("Entry at savePendingOrDeliveredOrder(Service)");
+		// check status of order(Pending,Delivered,Failed) else return
+		// suspicious activity
 		if ((status != null && status.trim().length() > 0)
 				&& (status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_DELIVERED)
 						|| status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_PENDING)
 						|| status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_FAILED))) {
 			// Process when status is not null
+			// check for status of order in DB if pending or delivered then
+			// process else return suspicious activity
+			// because if status is failed(it is fixed)then we can't change it
+			// to pending or delivered.
 			int orderStatus = dao.checkForPendingOrDeliveredOrder(orderNumber);
 			if (orderStatus > 0) {
 				int newOrderStatus = 0;
-				if (status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_DELIVERED)
-						|| status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_PENDING)) {
+				// if status is pending the save order status as pending in DB
+				if (status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_PENDING)) {
 					newOrderStatus = dao.savePendingOrDeliveredOrderStatus(orderNumber, status);
 					logger.info("Saving Pending Or Delivered order status ");
+				} else if (status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_DELIVERED)) {
+					// if status is delivered then first check whether any
+					// delivery boy is assigned to that order or not
+					// if assigned then process else return "No delivery boy
+					// assigned"
+					int orderAssignedToDeliveryBoyStatus = dao.checkDeliveryBoyAssignmentForOrder(orderNumber);
+					if (orderAssignedToDeliveryBoyStatus > 0) {
+						logger.info("Saving Failed order status ");
+						newOrderStatus = dao.savePendingOrDeliveredOrderStatus(orderNumber, status);
+					} else {
+						logger.info("No Delivery Boy assigned to order");
+						return OrderNaoConstants.DELIVERY_BOY_NOT_ASSIGNED;
+					}
 				} else if (status.equalsIgnoreCase(OrderNaoConstants.ORDER_STATUS_FAILED)) {
+					// if status is failed then save failed as order status in
+					// DB
 					newOrderStatus = dao.saveFailedStatusCommentsOfOrder(orderNumber, failedComments);
 					logger.info("Saving Failed order status ");
 				}
@@ -568,9 +589,14 @@ public class OrderService {
 		double totalServiceChargeToCollect = 0;
 		try {
 			totalMoneyProvided = dao.getTotalMoneyProvided();
-			totalServiceChargeToCollect = dao.getTotalServiceCharge();
 		} catch (Exception e) {
 			logger.error("Exception :- " + e.getMessage());
+		} finally {
+			try {
+				totalServiceChargeToCollect = dao.getTotalServiceCharge();
+			} catch (Exception e2) {
+				logger.error("Exception :- " + e2.getMessage());
+			}
 		}
 		totalMoneyToBeCollected = (totalMoneyProvided + totalServiceChargeToCollect);
 		logger.info("total money provided :- " + totalMoneyProvided + " + total service charge to collect :- "
@@ -607,7 +633,15 @@ public class OrderService {
 		logger.info("Entry at updateMoneySubmittedByDeliveryBoy");
 		int submittedMoneyStatus = 0;
 		try {
-			submittedMoneyStatus = dao.updateMoneySubmittedByDeliveryBoy(deliveryBoyId, comments, moneyCollected);
+			int currentDateEntry = dao.checkForCurrentDateEntryOfMoneyProvided(deliveryBoyId);
+			if (currentDateEntry > 0) {
+				logger.info("Delivery Boy exist in DB : Updating money submitted by delivery boy");
+				submittedMoneyStatus = dao.updateMoneySubmittedByDeliveryBoy(deliveryBoyId, comments, moneyCollected);
+			} else {
+				logger.info("Delivery Boy doesn't exist in DB : inserting current date entry and money collected");
+				submittedMoneyStatus = dao.insertCurrentDateEntryForDeliveryBoy(deliveryBoyId, moneyCollected,
+						comments);
+			}
 		} catch (Exception e) {
 			logger.error("Exception :- ", e);
 		}
@@ -793,19 +827,41 @@ public class OrderService {
 		try {
 			if (forDate == OrderNaoConstants.FOR_MONTHLY_TOTAL_ORDER_REPORT) {
 				logger.info("FOR_MONTHLY_TOTAL_ORDER_REPORT");
-				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlyTotalOrder(selectedYear,selectedMonth);
+				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlyTotalOrder(selectedYear,
+						selectedMonth);
 			} else if (forDate == OrderNaoConstants.FOR_MONTHLY_SUCCESSFULL_ORDER_REPORT) {
 				logger.info("FOR_MONTHLY_SUCCESSFULL_ORDER_REPORT");
-				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlySuccessfullOrder(selectedYear,selectedMonth);
+				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlySuccessfullOrder(selectedYear,
+						selectedMonth);
 			} else if (forDate == OrderNaoConstants.FOR_MONTHLY_FAILED_ORDER_REPORT) {
 				logger.info("FOR_MONTHLY_FAILED_ORDER_REPORT");
-				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlyFailedOrder(selectedYear,selectedMonth);
-			} 
+				monthlyOrderDetaisForReport = dao.getMoreDetailsOfOrderForMonthlyFailedOrder(selectedYear,
+						selectedMonth);
+			}
 		} catch (Exception e) {
 			logger.error("Exception :- ", e);
 		}
 		logger.info("Exit at getMonthlyOrderDetailsForReport()");
 		return monthlyOrderDetaisForReport;
+	}
+
+	public boolean checkForPhoneNumber(String contactNumber) {
+		logger.info("Entry at checkForPhoneNumber");
+		boolean status = false;
+		try {
+			int result = dao.checkForPhoneNumber(contactNumber);
+			logger.info("checkForPhoneNumber :- " + result);
+			if (result > 0) {
+				status = true;
+			} else {
+				status = false;
+			}
+			logger.info("Exit at checkForPhoneNumber");
+			return status;
+		} catch (Exception e) {
+			logger.error("Exception ", e);
+			return true;
+		}
 	}
 
 }
