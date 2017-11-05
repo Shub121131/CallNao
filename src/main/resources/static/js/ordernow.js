@@ -171,6 +171,19 @@ $(document).ready(function() {
 
 });
 
+function saveProductPrice(orderNumber) {
+	var productPrice = $("#productPriceOf-" + orderNumber).val();
+	console.log("inside saveProductPrice :product price :- " + productPrice);
+}
+
+function editProductPrice(orderNumber) {
+	var isDisabled = $("#productPriceOf-" + orderNumber).prop('disabled');
+	if (isDisabled) {
+		console.log("input box enabled OrderNumber : " + orderNumber);
+		$("#productPriceOf-" + orderNumber).prop('disabled', false);
+	}
+}
+
 function getDetailsOfOrder(forDate) {
 	var forDailyTotalOrderReport = 1;
 	var forDailySuccessfullOrderReport = 2;
